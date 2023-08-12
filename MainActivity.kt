@@ -2,6 +2,7 @@ package com.websarva.wings.android.screentransition
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = SimpleAdapter(this@MainActivity, _menuList, android.R.layout.simple_list_item_2, from , to)
         lvMenu.adapter = adapter
         lvMenu.onItemClickListener = ListItemClickListener()
+        registerForContextMenu(lvMenu)
     }
 
     private fun createTeishokuList() : MutableList<MutableMap<String, Any>> {
@@ -79,5 +81,11 @@ class MainActivity : AppCompatActivity() {
         val adapter = SimpleAdapter(this@MainActivity, _menuList, R.layout.row, _from, _to)
         lvMenu.adapter = adapter
         return returnVal
+    }
+
+    override fun onCreateContextMenu(menu: ContextMenu, view: View, menuInfo: ContextMenu.ContextMenuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo)
+        menuInflater.inflate(R.menu.menu_context_menu_list, menu)
+        menu.setHeaderTitle(R.string.menu_list_context_header)
     }
 }
