@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.SimpleAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -53,12 +54,7 @@ class MainActivity : AppCompatActivity() {
     private inner class ListItemClickListener : AdapterView.OnItemClickListener {
         override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id : Long) {
             val item = parent.getItemAtPosition(position) as MutableMap<String, Any>
-            val menuName = item["name"] as String
-            val menuPrice = item["price"] as Int
-            val intent2MenuThanks = Intent(this@MainActivity, MenuThanksActivity::class.java)
-            intent2MenuThanks.putExtra("menuName", menuName)
-            intent2MenuThanks.putExtra("menuPrice", "${menuPrice}円")
-            startActivity(intent2MenuThanks)
+            order(item)
         }
     }
 
@@ -87,5 +83,34 @@ class MainActivity : AppCompatActivity() {
         super.onCreateContextMenu(menu, view, menuInfo)
         menuInflater.inflate(R.menu.menu_context_menu_list, menu)
         menu.setHeaderTitle(R.string.menu_list_context_header)
+    }
+
+    private fun order(menu: MutableMap<String, Any>) {
+        val menuName = menu["name"] as String
+        val menuPrice = menu["price"] as Int
+
+        val intent2MenuThanks = Intent(this@MainActivity, MenuThanksActivity::class.java)
+        intent2MenuThanks.putExtra("menuPrice", "${menuPrice}円")
+
+        startActivity(intent2MenuThanks)
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        var returnVal = true
+        val info = item.menuInfo as AdapterView.AdapterContextMenuInfo
+        val listenPosition = info.position
+        val menu = _menuList[listenPosition]
+
+        when(item.itemId) {
+            R.id.menuListContextDesc -> {
+                val desc = menu["desc"] as String
+                Toast.makeText(this@MainActivity, desc, Toast.LENGTH_LONG).show()
+            }
+            R.id.menuListContextOrder ->
+                order(menu)
+            else ->
+                returnVal = super.onContextItemSelected(item)
+        }
+        return returnVal
     }
 }
